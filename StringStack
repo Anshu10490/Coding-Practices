@@ -1,0 +1,19 @@
+class Solution {
+    public boolean stringStack(String pat, String tar) {
+        // code here
+        int i = tar.length() - 1;
+        int j = pat.length() - 1;
+
+        if (pat.length() < tar.length()) return false;
+
+        while (i >= 0 && j >= 0) {
+            if (tar.charAt(i) == pat.charAt(j)) {
+                i--;
+                j--;
+            } else {
+                j -= 2;
+            }
+        }
+        return i < 0;
+    }
+}
