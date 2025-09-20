@@ -1,0 +1,76 @@
+class Router {
+    private static class Packet {
+        int s, d, t;
+        Packet(int s, int d, int t) {
+            this.s = s; this.d = d; this.t = t;
+        }
+    }
+
+    private int limit;
+    private Queue<Packet> q;
+    private Set<String> seen;
+    private Map<Integer, TreeMap<Integer, Integer>> destMap;
+
+    public Router(int memoryLimit) {
+        limit = memoryLimit;
+        q = new LinkedList<>();
+        seen = new HashSet<>();
+        destMap = new HashMap<>();
+    }
+    
+    public boolean addPacket(int source, int destination, int timestamp) {
+        String key = source + "#" + destination + "#" + timestamp;
+        if (seen.contains(key)) return false;
+
+        if (q.size() == limit) {
+            Packet old = q.poll();
+            seen.remove(old.s + "#" + old.d + "#" + old.t);
+            TreeMap<Integer, Integer> tm = destMap.get(old.d);
+            tm.put(old.t, tm.get(old.t) - 1);
+            if (tm.get(old.t) == 0) tm.remove(old.t);
+            if (tm.isEmpty()) destMap.remove(old.d);
+        }
+
+        Packet p = new Packet(source, destination, timestamp);
+        q.offer(p);
+        seen.add(key);
+
+        destMap.putIfAbsent(destination, new TreeMap<>());
+        TreeMap<Integer, Integer> tm = destMap.get(destination);
+        tm.put(timestamp, tm.getOrDefault(timestamp, 0) + 1);
+
+        return true;
+    }
+    
+    public int[] forwardPacket() {
+        if (q.isEmpty()) return new int[]{};
+        Packet p = q.poll();
+        seen.remove(p.s + "#" + p.d + "#" + p.t);
+
+        TreeMap<Integer, Integer> tm = destMap.get(p.d);
+        tm.put(p.t, tm.get(p.t) - 1);
+        if (tm.get(p.t) == 0) tm.remove(p.t);
+        if (tm.isEmpty()) destMap.remove(p.d);
+
+        return new int[]{p.s, p.d, p.t};
+    }
+    
+    public int getCount(int destination, int startTime, int endTime) {
+        if (!destMap.containsKey(destination)) return 0;
+        TreeMap<Integer, Integer> tm = destMap.get(destination);
+
+        int count = 0;
+        for (Map.Entry<Integer, Integer> e : tm.subMap(startTime, true, endTime, true).entrySet()) {
+            count += e.getValue();
+        }
+        return count;
+    }
+}
+
+/**
+ * Your Router object will be instantiated and called as such:
+ * Router obj = new Router(memoryLimit);
+ * boolean param_1 = obj.addPacket(source,destination,timestamp);
+ * int[] param_2 = obj.forwardPacket();
+ * int param_3 = obj.getCount(destination,startTime,endTime);
+ */
