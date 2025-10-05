@@ -1,0 +1,38 @@
+class Solution {
+    public ArrayList<String> ratInMaze(int[][] maze) {
+        // code here
+        ArrayList<String> res= new ArrayList<>();
+        dfs(res, 0, 0, maze, new StringBuilder());
+        Collections.sort(res);
+        return res;
+    }
+    void dfs(ArrayList<String> res, int i, int j, int [][]maze, StringBuilder sb){
+        if(maze[i][j]!=1) return;
+        if(i==maze.length-1 && j==maze[0].length-1){
+            res.add(sb.toString());
+            return ;
+        }
+        maze[i][j]=0;
+        if(j>0){
+            sb.append("L");
+            dfs(res, i, j-1, maze, sb);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        if(j<maze[0].length-1){
+            sb.append("R");
+            dfs(res, i, j+1, maze, sb);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        if(i>0){
+            sb.append("U");
+            dfs(res, i-1, j, maze, sb);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        if(i<maze.length-1){
+            sb.append("D");
+            dfs(res, i+1, j, maze, sb);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        maze[i][j]=1;
+    }
+}
