@@ -1,0 +1,33 @@
+class Solution {
+    int[] dr = {2, 1, -1, -2, -2, -1, 1, 2};
+    int[] dc = {1, 2, 2, 1, -1, -2, -2, -1};
+
+    public ArrayList<ArrayList<Integer>> knightTour(int n) {
+        int[][] board = new int[n][n];
+        for (int[] r : board) Arrays.fill(r, -1);
+        board[0][0] = 0;
+        if (solve(0, 0, 1, board, n)) {
+            ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                ArrayList<Integer> row = new ArrayList<>();
+                for (int j = 0; j < n; j++) row.add(board[i][j]);
+                res.add(row);
+            }
+            return res;
+        }
+        return new ArrayList<>();
+    }
+
+    boolean solve(int r, int c, int m, int[][] b, int n) {
+        if (m == n * n) return true;
+        for (int i = 0; i < 8; i++) {
+            int nr = r + dr[i], nc = c + dc[i];
+            if (nr >= 0 && nc >= 0 && nr < n && nc < n && b[nr][nc] == -1) {
+                b[nr][nc] = m;
+                if (solve(nr, nc, m + 1, b, n)) return true;
+                b[nr][nc] = -1;
+            }
+        }
+        return false;
+    }
+}
