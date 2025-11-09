@@ -1,0 +1,36 @@
+class Solution {
+    public int chocolatePickup(int[][] mat) {
+        // code here
+        int n=mat.length;
+        int[][][] dp = new int[n][n][n];
+        for (int[][] d1 : dp)
+            for (int[] d2 : d1)
+                java.util.Arrays.fill(d2, Integer.MIN_VALUE);
+        int ans = dfs(mat, dp, n, 0, 0, 0);
+        return Math.max(0, ans);
+    }
+
+    private int dfs(int[][] mat, int[][][] dp, int n, int r1, int c1, int r2) {
+        int c2 = r1 + c1 - r2;
+        if (r1 >= n || c1 >= n || r2 >= n || c2 >= n ||
+            mat[r1][c1] == -1 || mat[r2][c2] == -1)
+            return Integer.MIN_VALUE;
+
+        if (r1 == n - 1 && c1 == n - 1)
+            return mat[r1][c1];
+
+        if (dp[r1][c1][r2] != Integer.MIN_VALUE)
+            return dp[r1][c1][r2];
+
+        int res = mat[r1][c1];
+        if (r1 != r2) res += mat[r2][c2];
+
+        int best = Math.max(
+            Math.max(dfs(mat, dp, n, r1 + 1, c1, r2 + 1), dfs(mat, dp, n, r1, c1 + 1, r2)),
+            Math.max(dfs(mat, dp, n, r1 + 1, c1, r2), dfs(mat, dp, n, r1, c1 + 1, r2 + 1))
+        );
+
+        res += best;
+        return dp[r1][c1][r2] = res;
+    }
+}
