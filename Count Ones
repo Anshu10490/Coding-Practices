@@ -1,0 +1,8 @@
+class Solution {
+    public int countOnes(String[] strs) {
+        int c = 0;
+        for (String s : strs)
+            if (s.equals("1")) c++;
+        return c;
+    }
+}
